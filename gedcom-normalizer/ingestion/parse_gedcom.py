@@ -1,7 +1,7 @@
 from ged4py.parser import GedcomReader
 import pandas as pd
 
-path = "ingestion/example.ged"  # ruta de ejemplo
+path = "data/chamadoira_2025.ged"
 
 with GedcomReader(path) as parser:
     people = [
