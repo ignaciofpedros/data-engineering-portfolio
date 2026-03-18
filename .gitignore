@@ -1,0 +1,37 @@
+# --- Datos locales y archivos sensibles ---
+data/
+**/data/
+*.ged
+*.csv
+*.parquet
+
+# --- Archivos temporales de Python ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite
+.venv/
+env/
+venv/
+.DS_Store
+
+# --- dbt ---
+target/
+dbt_packages/
+logs/
+manifest.json
+run_results.json
+
+# --- Airflow / Prefect / orquestación ---
+*.log
+.airflow/
+.prefect/
+.dagster_home/
+
+# --- Archivos del sistema / IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
