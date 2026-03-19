@@ -1,0 +1,6 @@
+gedcom_normalizer:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: ./database/gedcom.duckdb
