@@ -3,4 +3,5 @@ gedcom_normalizer:
   outputs:
     dev:
       type: duckdb
-      path: ./database/gedcom.duckdb
+      path: ../../../data/warehouse/gedcom.duckdb
+      threads: 1

@@ -4,6 +4,7 @@ data/
 *.ged
 *.csv
 *.parquet
+data/warehouse/*.duckdb
 
 # --- Archivos temporales de Python ---
 __pycache__/
