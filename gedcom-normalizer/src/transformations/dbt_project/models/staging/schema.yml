@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: stg_people
+    description: "Datos de personas normalizados desde el GEDCOM"
+    columns:
+      - name: id
+        tests:
+          - not_null
+          - unique
+
+  - name: stg_families
+    description: "Lista de familias con esposo, esposa y datos de matrimonio"
+    columns:
+      - name: family_id
+        tests:
+          - not_null
+          - unique
+      - name: husband_id
+        tests:
+          - not_null
+      - name: wife_id
+        tests:
+          - not_null
+      - name: marriage_date_raw
+        description: "Fecha del matrimonio"
+
+  - name: stg_family_children
+    description: "Relaciones entre familias e hijos"
+    columns:
+      - name: family_id
+        tests:
+          - not_null
+      - name: child_id
+        tests:
+          - not_null
