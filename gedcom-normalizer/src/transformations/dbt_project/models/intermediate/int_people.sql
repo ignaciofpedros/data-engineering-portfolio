@@ -79,7 +79,7 @@ parsed AS (
                 THEN CAST(SPLIT_PART(birth_clean, CASE WHEN birth_type = 'date_dash' THEN '-' ELSE '/' END, 1) AS INTEGER)
 
             WHEN birth_type = 'full_date'
-                THEN EXTRACT(DAY FROM TRY_STRPTIME(birth_clean, '%d %b %Y'))
+                THEN TRY_CAST(REGEXP_EXTRACT(birth_clean, '^([0-9]{1,2})') AS INTEGER)
 
             ELSE NULL
         END AS birth_day

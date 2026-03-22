@@ -81,7 +81,7 @@ parsed AS (
                 THEN CAST(SPLIT_PART(marriage_date_clean, CASE WHEN marriage_date_type = 'date_dash' THEN '-' ELSE '/' END, 1) AS INTEGER)
 
             WHEN marriage_date_type = 'full_date'
-                THEN EXTRACT(DAY FROM TRY_STRPTIME(marriage_date_clean, '%d %b %Y'))
+                THEN TRY_CAST(REGEXP_EXTRACT(marriage_date_clean, '^([0-9]{1,2})') AS INTEGER)
 
             ELSE NULL
         END AS marriage_date_day,
