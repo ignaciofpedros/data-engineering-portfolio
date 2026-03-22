@@ -42,20 +42,18 @@ parsed AS (
         birth_type,
 
         -- 🎯 AÑO
-        CAST(REGEXP_EXTRACT(birth_clean, '([0-9]{4})') AS INTEGER) AS birth_year,
+        CAST(NULLIF(REGEXP_EXTRACT(birth_clean, '([0-9]{4})'), '') AS INTEGER) AS birth_year,
+
 
         -- 🎯 MES (solo si se puede inferir)
         CASE
             WHEN birth_type = 'date_dash'
-                THEN CAST(SPLIT_PART(birth_clean, '-', 2) AS INTEGER)
+                THEN CAST(NULLIF(SPLIT_PART(birth_clean, '-', 2), '') AS INTEGER)
 
             WHEN birth_type = 'date_slash'
-                THEN CAST(SPLIT_PART(birth_clean, '/', 2) AS INTEGER)
+                THEN CAST(NULLIF(SPLIT_PART(birth_clean, '/', 2), '') AS INTEGER)
 
-            WHEN birth_type = 'full_date'
-                THEN EXTRACT(MONTH FROM TRY_STRPTIME(birth_clean, '%d %b %Y'))
-
-            WHEN birth_type = 'text_and_year' THEN
+            WHEN birth_type = 'text_and_year' OR birth_type = 'full_date' THEN
                 CASE
                     WHEN birth_lower LIKE '%ene%' THEN 1
                     WHEN birth_lower LIKE '%feb%' THEN 2

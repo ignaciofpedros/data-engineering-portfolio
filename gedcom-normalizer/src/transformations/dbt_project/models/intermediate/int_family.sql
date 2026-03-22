@@ -13,7 +13,8 @@ cleaned AS (
         wife_id,
         marriage_date_raw,
         REGEXP_REPLACE(marriage_date_raw, '^\((.*)\)$', '\1') AS marriage_date_clean,
-        LOWER(REGEXP_REPLACE(marriage_date_raw, '^\((.*)\)$', '\1')) AS marriage_date_lower
+        LOWER(REGEXP_REPLACE(marriage_date_raw, '^\((.*)\)$', '\1')) AS marriage_date_lower,
+        marriage_place
     FROM source
 ),
 
@@ -44,20 +45,17 @@ parsed AS (
         marriage_date_type,
 
         -- 🎯 AÑO
-        CAST(REGEXP_EXTRACT(marriage_date_clean, '([0-9]{4})') AS INTEGER) AS marriage_date_year,
+        CAST(NULLIF(REGEXP_EXTRACT(marriage_date_clean, '([0-9]{4})'), '') AS INTEGER) AS marriage_date_year,
 
         -- 🎯 MES (solo si se puede inferir)
         CASE
             WHEN marriage_date_type = 'date_dash'
-                THEN CAST(SPLIT_PART(marriage_date_clean, '-', 2) AS INTEGER)
+                THEN CAST(NULLIF(SPLIT_PART(marriage_date_clean, '-', 2), '') AS INTEGER)
 
             WHEN marriage_date_type = 'date_slash'
-                THEN CAST(SPLIT_PART(marriage_date_clean, '/', 2) AS INTEGER)
+                THEN CAST(NULLIF(SPLIT_PART(marriage_date_clean, '/', 2), '') AS INTEGER)
 
-            WHEN marriage_date_type = 'full_date'
-                THEN EXTRACT(MONTH FROM TRY_STRPTIME(marriage_date_clean, '%d %b %Y'))
-
-            WHEN marriage_date_type = 'text_and_year' THEN
+            WHEN marriage_date_type = 'text_and_year' OR marriage_date_type = 'full_date' THEN
                 CASE
                     WHEN marriage_date_lower LIKE '%ene%' THEN 1
                     WHEN marriage_date_lower LIKE '%feb%' THEN 2
@@ -86,7 +84,8 @@ parsed AS (
                 THEN EXTRACT(DAY FROM TRY_STRPTIME(marriage_date_clean, '%d %b %Y'))
 
             ELSE NULL
-        END AS marriage_date_day
+        END AS marriage_date_day,
+        marriage_place
 
     FROM classified
 ),
@@ -128,5 +127,6 @@ SELECT
     marriage_date_month,
     marriage_date_day,
     marriage_date,
-    marriage_date_precision
+    marriage_date_precision,
+    marriage_place
 FROM final
