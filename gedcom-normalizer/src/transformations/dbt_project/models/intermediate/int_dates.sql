@@ -91,10 +91,10 @@ final AS (
         -- 🎯 FECHA FINAL
         CASE
             WHEN date_year IS NULL THEN NULL
-            ELSE MAKE_DATE(
-                date_year,
-                COALESCE(date_month, 1),
-                COALESCE(date_day, 1)
+            ELSE TRY_CAST(
+                date_year || '-' ||
+                COALESCE(date_month, 1) || '-' ||
+                COALESCE(date_day, 1) AS DATE
             )
         END AS id_date,
 

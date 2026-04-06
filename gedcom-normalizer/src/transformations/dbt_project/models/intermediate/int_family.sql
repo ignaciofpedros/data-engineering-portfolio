@@ -11,9 +11,9 @@ cleaned AS (
         s.family_id,
         s.husband_id,
         s.wife_id,
-        COALESCE(d.id_date,DATE('9999-12-31')) AS id_date,
+        COALESCE(d.id_date,DATE('9999-12-31')) AS id_marriage_date,
         COALESCE(d.date_precision, '-') AS date_precision,
-        COALESCE(p.id_place, '-') AS id_place
+        COALESCE(p.id_place, '-') AS id_marriage_place
     FROM source s
     LEFT JOIN {{ ref('dim_date') }} d
         ON s.marriage_date_raw = d.date_raw
@@ -25,7 +25,7 @@ SELECT
     family_id,
     husband_id,
     wife_id,
-    id_date,
+    id_marriage_date,
     date_precision,
-    id_place
+    id_marriage_place
 FROM cleaned
