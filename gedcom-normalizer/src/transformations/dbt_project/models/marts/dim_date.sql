@@ -7,6 +7,6 @@ SELECT
     date_year,
     date_month,
     date_day,
-    TRY_CAST(id_date AS DATE) AS id_date,
+    TRY_CAST(date_id AS DATE) AS date_id,
     date_precision
-FROM {{ ref('int_dates') }} dates
+FROM {{ ref('int_date') }} dates

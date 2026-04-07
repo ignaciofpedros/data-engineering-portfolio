@@ -2,7 +2,7 @@
 
 WITH source AS (
     SELECT *
-    FROM {{ ref('stg_dates') }}
+    FROM {{ ref('stg_date') }}
 ),
 
 -- 1️⃣ Limpieza
@@ -96,7 +96,7 @@ final AS (
                 COALESCE(date_month, 1) || '-' ||
                 COALESCE(date_day, 1) AS DATE
             )
-        END AS id_date,
+        END AS date_id,
 
         -- 🎯 PRECISIÓN 🔥
         CASE
@@ -116,6 +116,6 @@ SELECT
     date_year,
     date_month,
     date_day,
-    id_date,
+    date_id,
     date_precision
 FROM final
