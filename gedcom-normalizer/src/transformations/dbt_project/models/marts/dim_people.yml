@@ -1,0 +1,7 @@
+models:
+  - name: dim_people
+    columns:
+      - name: person_id
+        tests:
+          - not_null
+          - unique

@@ -1,4 +1,4 @@
-{{ config(materialized='view') }}
+{{ config(materialized='ephemeral') }}
 
 WITH source AS (
     SELECT *
@@ -19,7 +19,7 @@ cleaned AS (
         ON s.marriage_date_raw = d.date_raw
     LEFT JOIN {{ ref('dim_place_alias') }} p
         ON s.marriage_place ILIKE '%' || p.key_word || '%'
-    QUALIFY ROW_NUMBER() OVER ( PARTITION BY p.place_id ORDER BY p.priority ASC) = 1
+    QUALIFY ROW_NUMBER() OVER ( PARTITION BY s.marriage_place ORDER BY p.priority ASC) = 1
 )
 
 SELECT

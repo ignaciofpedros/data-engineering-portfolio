@@ -1,0 +1,7 @@
+models:
+  - name: dim_family
+    columns:
+      - name: family_id
+        tests:
+          - not_null
+          - unique
