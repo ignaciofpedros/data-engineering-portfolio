@@ -1,0 +1,8 @@
+services:
+  dbt:
+    build: .
+    container_name: dbt_duckdb
+    volumes:
+      - .:/app
+    working_dir: /app
+    tty: true
