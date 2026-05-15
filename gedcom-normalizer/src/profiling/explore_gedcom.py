@@ -3,7 +3,7 @@ from ged4py.parser import GedcomReader
 from collections import Counter
 
 BASE_DIR = Path(__file__).resolve().parents[2]
-RAW_PATH = BASE_DIR / "data/raw/chamadoira_2025.ged"
+RAW_PATH = BASE_DIR / "data/raw/chamadoira_2026.ged"
 
 tag_counts = Counter()
 subtag_counts = Counter()

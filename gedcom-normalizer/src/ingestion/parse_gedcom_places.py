@@ -7,7 +7,7 @@ RAW_PATH = BASE_DIR / "data/raw/chamadoira_2026.ged"
 STAGING_DIR = BASE_DIR / "data/staging"
 STAGING_DIR.mkdir(parents=True, exist_ok=True)
 
-dates_output = STAGING_DIR / "dates.csv"
+places_output = STAGING_DIR / "places.csv"
 
 rows = []
 
@@ -22,21 +22,21 @@ with GedcomReader(str(RAW_PATH)) as parser:
 
             event_type = sub.tag
 
-            # buscar DATE dentro del evento
-            date_tag = sub.sub_tag("DATE")
-            if date_tag and date_tag.value:
+            # buscar PLAC dentro del evento
+            place_tag = sub.sub_tag("PLAC")
+            if place_tag and place_tag.value:
 
                 rows.append({
                     "entity_type": entity_type,
                     "entity_id": entity_id,
                     "event_type": event_type,
-                    "date_raw": str(date_tag.value)  # 🔑 clave: convertir a string
+                    "place_raw": str(place_tag.value).strip()
                 })
 
 # exportar
 df = pd.DataFrame(rows)
-df.to_csv(dates_output, index=False)
+df.to_csv(places_output, index=False)
 
-print("✅ Fechas extraídas correctamente:")
-print(f" - Output: {dates_output}")
-print(f"Total fechas: {len(df)}")
+print("✅ Lugares extraídos correctamente:")
+print(f" - Output: {places_output}")
+print(f"Total lugares: {len(df)}")

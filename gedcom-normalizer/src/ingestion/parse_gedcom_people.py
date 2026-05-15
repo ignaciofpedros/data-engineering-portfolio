@@ -4,7 +4,7 @@ import pandas as pd
 
 # Paths
 BASE_DIR = Path(__file__).resolve().parents[2]
-RAW_PATH = BASE_DIR / "data/raw/chamadoira_2025.ged"
+RAW_PATH = BASE_DIR / "data/raw/chamadoira_2026.ged"
 STAGING_DIR = BASE_DIR / "data/staging"
 STAGING_DIR.mkdir(parents=True, exist_ok=True)
 OUTPUT_PATH = STAGING_DIR / "people.csv"
