@@ -5,3 +5,5 @@ pandas
 ged4py
 pathlib
 unidecode
+rapidfuzz
+geopy
