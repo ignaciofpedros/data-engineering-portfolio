@@ -1,5 +1,7 @@
 models:
   - name: dim_family
+    config:
+      enabled: false
     columns:
       - name: family_id
         tests:

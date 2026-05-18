@@ -8,8 +8,8 @@ from rapidfuzz import fuzz, process
 # PATHS
 # =========================
 
-BASE_DIR = Path(__file__).resolve().parents[2]
-STAGING_DIR = BASE_DIR / "data/staging"
+BASE_DIR = Path(__file__).resolve().parents[3]
+STAGING_DIR = BASE_DIR / "data/staging/places_aux"
 
 INPUT_FILE = STAGING_DIR / "places_normalized.csv"
 OUTPUT_FILE = STAGING_DIR / "places_clusters.csv"
