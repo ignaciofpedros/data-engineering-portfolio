@@ -2,18 +2,14 @@ from pathlib import Path
 import pandas as pd
 import re
 
-# =========================
-# PATHS
-# =========================
-
 BASE_DIR = Path(__file__).resolve().parents[3]
 STAGING_DIR = BASE_DIR / "data/staging"
 AUX_DIR = STAGING_DIR / "places_aux"
 
-input = AUX_DIR / "nomenclator.csv"
+input_data = AUX_DIR / "nomenclator.csv"
 output = AUX_DIR / "nomenclator_transformado.csv"
 
-df = pd.read_csv(input)
+df = pd.read_csv(input_data, sep=";")
 
 articles = {"O", "Os", "A", "As"}
 

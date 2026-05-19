@@ -7,3 +7,9 @@ pathlib
 unidecode
 rapidfuzz
 geopy
+sentence-transformers>=2.7.0
+torch>=2.1
+faiss-cpu>=1.7.4
+requests>=2.31
+tqdm>=4.66
+pytest>=8.0

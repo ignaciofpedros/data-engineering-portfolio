@@ -1,7 +1,10 @@
 from pathlib import Path
+from collections import defaultdict
+
 import pandas as pd
 import unidecode
 import re
+
 from rapidfuzz import fuzz
 
 # =========================
@@ -9,11 +12,12 @@ from rapidfuzz import fuzz
 # =========================
 
 BASE_DIR = Path(__file__).resolve().parents[3]
+
 STAGING_DIR = BASE_DIR / "data/staging"
 AUX_DIR = STAGING_DIR / "places_aux"
 
 places_norm_input = AUX_DIR / "places_normalized.csv"
-nomenclator_input = AUX_DIR / "nomenclator.csv"
+nomenclator_input = AUX_DIR / "nomenclator_transformado.csv"
 
 output_file = AUX_DIR / "places_matched.csv"
 
@@ -21,69 +25,70 @@ output_file = AUX_DIR / "places_matched.csv"
 # CONFIG
 # =========================
 
-MATCH_THRESHOLD = 70
+MATCH_THRESHOLD = 60.0
+
+WEIGHT_GLOBAL = 0.55
+WEIGHT_LUGAR = 0.05
+WEIGHT_PARROQUIA = 0.20
+WEIGHT_CONCELLO = 0.20
 
 # =========================
 # NORMALIZACIÓN
 # =========================
 
-
 def normalize_text(text: str) -> str:
+
     if pd.isna(text) or text is None:
         return None
 
     text = str(text).strip().lower()
 
-    # quitar acentos
+    if not text:
+        return None
+
     text = unidecode.unidecode(text)
 
-    # normalizar separadores
     text = text.replace(";", ",")
     text = text.replace("/", ",")
 
-    # quitar caracteres raros
     text = re.sub(r"[^\w\s,.-]", " ", text)
-
-    # espacios repetidos
     text = re.sub(r"\s+", " ", text)
 
-    # normalizar comas
     text = re.sub(r"\s*,\s*", ", ", text)
-
-    # quitar comas repetidas
     text = re.sub(r",+", ",", text)
 
-    return text.strip(" ,")
+    text = text.strip(" ,")
+
+    return text if text else None
 
 
 # =========================
-# CARGAR DATOS
+# LOAD
 # =========================
 
 places_df = pd.read_csv(places_norm_input)
 nomen_df = pd.read_csv(nomenclator_input)
 
 # =========================
-# NORMALIZAR NOMENCLÁTOR
+# NORMALIZAR NOMENCLATOR
 # =========================
 
-nomen_columns = [
+cols = [
     "provincia",
     "concello",
     "parroquia",
-    "advocacion parroquia",
     "lugar"
 ]
 
-for col in nomen_columns:
-    nomen_df[col] = nomen_df[col].apply(normalize_text)
+for c in cols:
+    nomen_df[c] = nomen_df[c].apply(normalize_text)
 
 # =========================
-# CREAR CAMPOS JERÁRQUICOS
+# FULL PATH
 # =========================
-
 
 def build_full_path(row):
+
     parts = [
         row.get("lugar"),
         row.get("parroquia"),
@@ -91,69 +96,119 @@ def build_full_path(row):
         row.get("provincia")
     ]
 
-    parts = [p for p in parts if pd.notna(p) and p]
+    parts = [
+        p for p in parts
+        if pd.notna(p) and p
+    ]
 
-    return ", ".join(parts)
+    return ", ".join(parts) if parts else None
 
 
-nomen_df["full_path"] = nomen_df.apply(build_full_path, axis=1)
+nomen_df["full_path"] = nomen_df.apply(
+    build_full_path,
+    axis=1
+)
+
+# =========================
+# PRECOMPUTE RECORDS
+# =========================
+
+nomen_records = nomen_df.to_dict("records")
+
+# Índice rápido por concello
+nomen_by_concello = defaultdict(list)
+
+for rec in nomen_records:
+
+    concello = rec.get("concello")
+
+    if concello:
+        nomen_by_concello[concello].append(rec)
+
+# =========================
+# SCORE
+# =========================
+
+def score_match(place_clean, place_parts, row):
+
+    full_path = row.get("full_path")
+
+    if not full_path:
+        return 0
+
+    score = 0
+
+    # =========================
+    # GLOBAL
+    # =========================
+
+    score += (
+        fuzz.ratio(place_clean, full_path)
+        * WEIGHT_GLOBAL
+    )
+
+    # =========================
+    # LUGAR
+    # =========================
+
+    lugar = row.get("lugar")
+
+    if lugar and len(place_parts) >= 1:
+
+        score += (
+            fuzz.ratio(place_parts[0], lugar)
+            * WEIGHT_LUGAR
+        )
+
+    # =========================
+    # PARROQUIA
+    # =========================
+
+    parroquia = row.get("parroquia")
+
+    if parroquia:
+
+        score += (
+            fuzz.ratio(place_clean, parroquia)
+            * WEIGHT_PARROQUIA
+        )
+
+    # =========================
+    # CONCELLO
+    # =========================
+
+    concello = row.get("concello")
+
+    if concello and len(place_parts) >= 2:
+
+        score += (
+            fuzz.ratio(place_parts[-1], concello)
+            * WEIGHT_CONCELLO
+        )
+
+    return score / 100
+
 
 # =========================
 # MATCHING
 # =========================
 
-
-def score_match(place_clean, place_parts, nomen_row):
-    """
-    Score compuesto jerárquico.
-    """
-
-    score = 0
-
-    full_path = nomen_row["full_path"]
-    lugar = nomen_row["lugar"]
-    parroquia = nomen_row["parroquia"]
-    concello = nomen_row["concello"]
-    provincia = nomen_row["provincia"]
-
-    # =========================
-    # 1. similitud global
-    # =========================
-
-    global_score = fuzz.WRatio(place_clean, full_path)
-
-    score += global_score * 0.40
-
-    # =========================
-    # 2. matching por niveles
-    # =========================
-
-    if len(place_parts) >= 1 and lugar:
-        s = fuzz.WRatio(place_parts[0], lugar)
-        score += s * 0.30
-
-    if len(place_parts) >= 2 and parroquia:
-        s = fuzz.WRatio(place_parts[1], parroquia)
-        score += s * 0.15
-
-    if len(place_parts) >= 2 and concello:
-        s = fuzz.WRatio(place_parts[-1], concello)
-        score += s * 0.10
-
-    if len(place_parts) >= 3 and provincia:
-        s = fuzz.WRatio(place_parts[-1], provincia)
-        score += s * 0.05
-
-    return round(score / 100, 4)
-
-
 results = []
 
-for _, place_row in places_df.iterrows():
+for _, row in places_df.iterrows():
 
-    place_clean = place_row["place_clean"]
+    place_clean = row.get("place_clean")
 
-    if pd.isna(place_clean):
+    # -------------------------
+    # Validación inicial
+    # -------------------------
+
+    if pd.isna(place_clean) or not place_clean:
+        continue
+
+    place_clean = normalize_text(place_clean)
+
+    if not place_clean:
         continue
 
     place_parts = [
@@ -162,59 +217,85 @@ for _, place_row in places_df.iterrows():
         if p.strip()
     ]
 
-    best_score = 0
-    best_match = None
-
     # =========================
-    # FILTRADO JERÁRQUICO
+    # CANDIDATOS
     # =========================
 
-    candidates = nomen_df
+    candidates = nomen_records
 
-    # intentar reducir candidatos por concello
+    # Filtro rápido por concello
     if len(place_parts) >= 2:
+
         possible_concello = place_parts[-1]
 
-        filtered = nomen_df[
-            nomen_df["concello"]
-            .fillna("")
-            .str.contains(possible_concello, regex=False)
-        ]
+        filtered = nomen_by_concello.get(
+            possible_concello
+        )
 
-        if len(filtered) > 0:
+        if filtered:
             candidates = filtered
 
     # =========================
-    # MATCHING
+    # BEST MATCH
     # =========================
 
-    for _, nomen_row in candidates.iterrows():
+    best_score = 0
+    best_match = None
 
-        score = score_match(
+    for cand in candidates:
+
+        s = score_match(
             place_clean,
             place_parts,
-            nomen_row
+            cand
         )
 
-        if score > best_score:
-            best_score = score
-            best_match = nomen_row
+        if s > best_score:
+            best_score = s
+            best_match = cand
 
     # =========================
-    # RESULTADO
+    # SCORE FINAL
     # =========================
 
-    result = place_row.to_dict()
+    final_score = round(
+        best_score * 100,
+        2
+    )
 
-    result["match_score"] = round(best_score * 100, 2)
+    # =========================
+    # RESULT
+    # =========================
 
-    if best_match is not None and best_score * 100 >= MATCH_THRESHOLD:
+    result = row.to_dict()
 
-        result["canonical_place"] = best_match["full_path"]
-        result["canonical_lugar"] = best_match["lugar"]
-        result["canonical_parroquia"] = best_match["parroquia"]
-        result["canonical_concello"] = best_match["concello"]
-        result["canonical_provincia"] = best_match["provincia"]
+    result["match_score"] = final_score
+
+    if (
+        best_match is not None
+        and final_score >= MATCH_THRESHOLD
+    ):
+
+        result["canonical_place"] = (
+            best_match["full_path"]
+        )
+
+        result["canonical_lugar"] = (
+            best_match["lugar"]
+        )
+
+        result["canonical_parroquia"] = (
+            best_match["parroquia"]
+        )
+
+        result["canonical_concello"] = (
+            best_match["concello"]
+        )
+
+        result["canonical_provincia"] = (
+            best_match["provincia"]
+        )
+
         result["matched"] = True
 
     else:
@@ -224,35 +305,31 @@ for _, place_row in places_df.iterrows():
         result["canonical_parroquia"] = None
         result["canonical_concello"] = None
         result["canonical_provincia"] = None
+
         result["matched"] = False
 
     results.append(result)
 
 # =========================
-# EXPORTAR
+# OUTPUT
 # =========================
 
 results_df = pd.DataFrame(results)
 
-results_df = results_df.sort_values(
-    by="match_score",
-    ascending=False
+results_df.to_csv(
+    output_file,
+    index=False
 )
-
-results_df.to_csv(output_file, index=False)
 
 # =========================
 # STATS
 # =========================
 
-matched_count = results_df["matched"].sum()
-
+matched = results_df["matched"].sum()
 total = len(results_df)
 
-print("✅ Matching completado")
-print(f"Output: {output_file}")
-
-print(f"\nTotal lugares: {total}")
-print(f"Matches: {matched_count}")
-print(f"Sin match: {total - matched_count}")
-print(f"Ratio match: {(matched_count / total) * 100:.2f}%")
+print("\n✅ Matching completado")
+print(f"Total: {total}")
+print(f"Matched: {matched}")
+print(f"Ratio: {matched / total * 100:.2f}%")
+print(f"No matched: {total - matched}")

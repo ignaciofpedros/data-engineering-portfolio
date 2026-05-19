@@ -8,7 +8,7 @@ SELECT
     w.name AS wife_name,
     f.marriage_date_id,
     f.date_precision,
-    p.place_name AS marriage_place_name
+    p.place_sk AS marriage_place_id
 FROM {{ ref('int_family') }} f
 LEFT JOIN {{ ref('int_people') }} h ON f.husband_id = h.id
 LEFT JOIN {{ ref('int_people') }} w ON f.wife_id = w.id

@@ -1,0 +1,67 @@
+<mxfile host="Electron">
+  <diagram name="Page-1" id="MFRhBeYDogO9COgMrUiu">
+    <mxGraphModel dx="775" dy="561" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="xCceJsT3c2WoImuUO5zL-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="stg_date" vertex="1">
+          <mxGeometry height="60" width="120" x="80" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="xCceJsT3c2WoImuUO5zL-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="stg_places" vertex="1">
+          <mxGeometry height="60" width="120" x="80" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="xCceJsT3c2WoImuUO5zL-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="stg_people" vertex="1">
+          <mxGeometry height="60" width="120" x="80" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="xCceJsT3c2WoImuUO5zL-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="stg_family_children" vertex="1">
+          <mxGeometry height="60" width="120" x="80" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="xCceJsT3c2WoImuUO5zL-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="stg_family" vertex="1">
+          <mxGeometry height="60" width="120" x="80" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="xCceJsT3c2WoImuUO5zL-6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="stg_people_birth_types" vertex="1">
+          <mxGeometry height="60" width="150" x="230" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="xCceJsT3c2WoImuUO5zL-7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="int_date" vertex="1">
+          <mxGeometry height="60" width="120" x="400" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="xCceJsT3c2WoImuUO5zL-8" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="int_family" vertex="1">
+          <mxGeometry height="60" width="120" x="400" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="xCceJsT3c2WoImuUO5zL-9" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="int_people" vertex="1">
+          <mxGeometry height="60" width="120" x="400" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="xCceJsT3c2WoImuUO5zL-10" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="dim_date" vertex="1">
+          <mxGeometry height="60" width="120" x="640" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="xCceJsT3c2WoImuUO5zL-11" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="dim_family" vertex="1">
+          <mxGeometry height="60" width="120" x="640" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="xCceJsT3c2WoImuUO5zL-12" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="dim_people" vertex="1">
+          <mxGeometry height="60" width="120" x="640" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="xCceJsT3c2WoImuUO5zL-13" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="dim_place" vertex="1">
+          <mxGeometry height="60" width="120" x="640" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="xCceJsT3c2WoImuUO5zL-15" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="dim_family" vertex="1">
+          <mxGeometry height="200" width="200" x="80" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="xCceJsT3c2WoImuUO5zL-16" parent="xCceJsT3c2WoImuUO5zL-15" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="family_id&lt;div&gt;husband_id&lt;/div&gt;&lt;div&gt;husband_name&lt;/div&gt;&lt;div&gt;wife_id&lt;/div&gt;&lt;div&gt;wife_name&lt;/div&gt;&lt;div&gt;marriage_date_id&lt;/div&gt;&lt;div&gt;date_precision&lt;/div&gt;&lt;div&gt;marriage_place_id&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="70" y="85" as="geometry" />
+        </mxCell>
+        <mxCell id="xCceJsT3c2WoImuUO5zL-17" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="dim_people" vertex="1">
+          <mxGeometry height="200" width="200" x="320" y="529" as="geometry" />
+        </mxCell>
+        <mxCell id="xCceJsT3c2WoImuUO5zL-18" parent="xCceJsT3c2WoImuUO5zL-17" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="person_id&lt;div&gt;family_id&lt;/div&gt;&lt;div&gt;name&lt;/div&gt;&lt;div&gt;wife_id&lt;/div&gt;&lt;div&gt;birth_id&lt;/div&gt;&lt;div&gt;birth_precision&lt;/div&gt;&lt;div&gt;death_id&lt;/div&gt;&lt;div&gt;death_precision&lt;/div&gt;&lt;div&gt;got_married&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="75" y="101" as="geometry" />
+        </mxCell>
+        <mxCell id="xCceJsT3c2WoImuUO5zL-19" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="dim_people" vertex="1">
+          <mxGeometry height="200" width="200" x="550" y="529" as="geometry" />
+        </mxCell>
+        <mxCell id="xCceJsT3c2WoImuUO5zL-20" parent="xCceJsT3c2WoImuUO5zL-19" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="person_id&lt;div&gt;family_id&lt;/div&gt;&lt;div&gt;name&lt;/div&gt;&lt;div&gt;wife_id&lt;/div&gt;&lt;div&gt;birth_id&lt;/div&gt;&lt;div&gt;birth_precision&lt;/div&gt;&lt;div&gt;death_id&lt;/div&gt;&lt;div&gt;death_precision&lt;/div&gt;&lt;div&gt;got_married&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="75" y="101" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
